@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Author {
+  id        String   @id @default(cuid())
+  name      String
+  bio       String?
+  birthdate DateTime
+
+  books Book[]
+}
+
+model Book {
+  id               String @id @default(cuid())
+  title            String
+  isbn             String
+  publication_year Int
+  genre            String
+  author_id        String
+
+  author   Author         @relation(fields: [author_id], references: [id])
+  products Book_Product[]
+}
+
+model Book_Product {
+  id           String  @id @default(cuid())
+  book_id      String
+  price        Decimal
+  stock        Int
+  format       String
+  warehouse_id String
+
+  book          Book           @relation(fields: [book_id], references: [id])
+  warehouse     Warehouse      @relation(fields: [warehouse_id], references: [id])
+  invoice_items Invoice_Item[]
+  cart_items    Cart_Item[]
+}
+
+model Warehouse {
+  id       String @id @default(cuid())
+  name     String
+  location String
+  capacity Int
+
+  book_products Book_Product[]
+}
+
+model Customer {
+  id      String @id @default(cuid())
+  name    String
+  email   String
+  address String
+  phone   String
+
+  carts    Cart[]
+  invoices Invoice[]
+}
+
+model Cart {
+  id          String   @id @default(cuid())
+  customer_id String
+  created_at  DateTime
+
+  customer   Customer    @relation(fields: [customer_id], references: [id])
+  cart_items Cart_Item[]
+  invoice    Invoice[]
+}
+
+model Cart_Item {
+  id               String   @id @default(cuid())
+  books_product_id String
+  quantity         Int
+  created_at       DateTime
+  cart_id          String
+
+  book_products Book_Product @relation(fields: [books_product_id], references: [id])
+  cart          Cart         @relation(fields: [cart_id], references: [id])
+}
+
+model Invoice {
+  id           String   @id @default(cuid())
+  total_amount Decimal
+  issued_at    DateTime
+  status       String
+  customer_id  String
+  cart_id      String
+
+  customer Customer       @relation(fields: [customer_id], references: [id])
+  cart     Cart           @relation(fields: [cart_id], references: [id])
+  items    Invoice_Item[]
+}
+
+model Invoice_Item {
+  id               String  @id @default(cuid())
+  books_product_id String
+  quantity         Int
+  price            Decimal
+  invoice_id       String
+
+  book_products Book_Product @relation(fields: [books_product_id], references: [id])
+  invoice       Invoice      @relation(fields: [invoice_id], references: [id])
+}
