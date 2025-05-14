@@ -20,10 +20,10 @@ model Author {
   bio       String?
   birthdate DateTime
 
-  books Book[]
+  books Books[]
 }
 
-model Book {
+model Books {
   id               String @id @default(uuid())
   title            String
   isbn             String
@@ -31,11 +31,11 @@ model Book {
   genre            String
   author_id        String
 
-  author   Author         @relation(fields: [author_id], references: [id])
-  products Book_Product[]
+  author   Author          @relation(fields: [author_id], references: [id])
+  products Books_Product[]
 }
 
-model Book_Product {
+model Books_Product {
   id           String  @id @default(uuid())
   book_id      String
   price        Decimal
@@ -43,7 +43,7 @@ model Book_Product {
   format       String
   warehouse_id String
 
-  book          Book           @relation(fields: [book_id], references: [id])
+  book         Books          @relation(fields: [book_id], references: [id])
   warehouse     Warehouse      @relation(fields: [warehouse_id], references: [id])
   invoice_items Invoice_Item[]
   cart_items    Cart_Item[]
@@ -55,7 +55,7 @@ model Warehouse {
   location String
   capacity Int
 
-  book_products Book_Product[]
+  book_products Books_Product[]
 }
 
 model Customer {
@@ -73,22 +73,22 @@ model Customer {
 model Cart {
   id          String   @id @default(uuid())
   customer_id String
-  created_at  DateTime
+  created_at  DateTime @default(now())
 
-  customer   Customer    @relation(fields: [customer_id], references: [id])
-  cart_items Cart_Item[]
-  invoice    Invoice[]
+  customer Customer    @relation(fields: [customer_id], references: [id])
+  items    Cart_Item[]
+  invoice  Invoice[]
 }
 
 model Cart_Item {
   id               String   @id @default(uuid())
   books_product_id String
   quantity         Int
-  created_at       DateTime
+  created_at       DateTime @default(now())
   cart_id          String
 
-  book_products Book_Product @relation(fields: [books_product_id], references: [id])
-  cart          Cart         @relation(fields: [cart_id], references: [id])
+  product Books_Product @relation(fields: [books_product_id], references: [id])
+  cart          Cart          @relation(fields: [cart_id], references: [id])
 }
 
 model Invoice {
@@ -111,6 +111,6 @@ model Invoice_Item {
   price            Decimal
   invoice_id       String
 
-  book_products Book_Product @relation(fields: [books_product_id], references: [id])
-  invoice       Invoice      @relation(fields: [invoice_id], references: [id])
+  book_products Books_Product @relation(fields: [books_product_id], references: [id])
+  invoice       Invoice       @relation(fields: [invoice_id], references: [id])
 }

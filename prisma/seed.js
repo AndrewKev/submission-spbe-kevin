@@ -1,8 +1,8 @@
 const prisma = require('../src/db')
 
 async function main() {
-  await prisma.book_Product.deleteMany();
-  await prisma.book.deleteMany();
+  await prisma.books_Product.deleteMany();
+  await prisma.books.deleteMany();
   await prisma.warehouse.deleteMany();
   await prisma.author.deleteMany();
 
@@ -38,7 +38,7 @@ async function main() {
     },
   });
 
-  const book1 = await prisma.book.create({
+  const book1 = await prisma.books.create({
     data: {
       title: 'Mystery in the Night',
       isbn: '1234567890',
@@ -48,7 +48,7 @@ async function main() {
     },
   });
 
-  const book2 = await prisma.book.create({
+  const book2 = await prisma.books.create({
     data: {
       title: 'The Science of Everything',
       isbn: '0987654321',
@@ -58,7 +58,7 @@ async function main() {
     },
   });
 
-  await prisma.book_Product.create({
+  await prisma.books_Product.create({
     data: {
       book_id: book1.id,
       price: 150000,
@@ -68,7 +68,7 @@ async function main() {
     },
   });
 
-  await prisma.book_Product.create({
+  await prisma.books_Product.create({
     data: {
       book_id: book2.id,
       price: 200000,

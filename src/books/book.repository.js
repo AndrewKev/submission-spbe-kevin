@@ -1,7 +1,7 @@
 const prisma = require('../db');
 
 const findBooks = async () => {
-  const books = await prisma.book.findMany({
+  const books = await prisma.books.findMany({
     select: {
       id: true,
       title: true,
@@ -21,7 +21,7 @@ const findBooks = async () => {
 }
 
 const findBookById = async (bookId) => {
-  const book = await prisma.book.findUnique({
+  const book = await prisma.books.findUnique({
     select: {
       id: true,
       title: true,
@@ -44,7 +44,7 @@ const findBookById = async (bookId) => {
 }
 
 const findProductByBookId = async (bookId) => {
-  const bookProduct = await prisma.book_Product.findMany({
+  const bookProduct = await prisma.books_Product.findMany({
     select: {
       id: true,
       format: true,
