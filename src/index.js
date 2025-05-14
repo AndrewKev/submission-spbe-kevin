@@ -17,6 +17,9 @@ app.use("/auth", authController);
 const bookController = require('./books/book.controller');
 app.use("/books", auth, bookController);
 
+const cartController = require('./carts/cart.controller');
+app.use("/carts", auth, cartController);
+
 app.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`)
 })
