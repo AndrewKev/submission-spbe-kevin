@@ -2,42 +2,61 @@ const express = require("express");
 
 const router = express.Router();
 
-const { verifyToken } = require('../utils/jwt');
+const { getCustIdFromToken } = require('../utils/jwt');
 
 const {
   findCartByCustomerId,
-  createCartWithItems
+  createCartWithItems,
+  insertToCartId,
+  updateCartItemQuantity
 } = require("./cart.repository");
 
 const {
-  findProductByBookId
+  findProductByBookProductId
 } = require("../books/book.repository");
 
 router.get("/", async (req, res) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  const decoded = verifyToken(token);
-  const custId = decoded.custId;
+  const custId = getCustIdFromToken(req);
   const carts = await findCartByCustomerId(custId);
+
+  if (!carts) return res.send([]);
 
   return res.send(carts)
 });
 
 router.post("/items", async (req, res) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const custId = getCustIdFromToken(req);
+  const bookProduct = await findProductByBookProductId(req.body?.books_product_id);
 
-  const decoded = verifyToken(token);
-  const custId = decoded.custId;
+  // check user sudah punya cart atau belum
+  // jika sudah, tambah product ke cart
+  // jika belum, buat cart baru
+  const userCart = await findCartByCustomerId(custId);
 
-  const bookProduct = await findProductByBookId(req.body?.books_product_id);
-  
+  if (userCart) {
+    // masukan product ke cart yg sudah ada
+    // cek jika barang sama, maka tambahkan quantity
+    const productExist = userCart.items.find(item => item.books_product_id === req.body?.books_product_id);
+
+    if (productExist) {
+      const currentQuantity = productExist?.quantity;
+      const newQuantity = currentQuantity + req.body?.quantity;
+
+      const updatedProduct = await updateCartItemQuantity(req.body?.books_product_id, productExist.id, newQuantity);
+
+      return res.send(updatedProduct);
+    } else {
+      const addedToCart = await insertToCartId(userCart.id, req.body);
+
+      return res.send(addedToCart);
+    }
+  }
+
   const dataToBeInserted = {
-    books_product_id: bookProduct[0].id,
+    books_product_id: bookProduct.id,
     quantity: req.body?.quantity,
   };
-  
+
   const newCart = await createCartWithItems(custId, dataToBeInserted);
 
   return res.send(newCart.cartItem);

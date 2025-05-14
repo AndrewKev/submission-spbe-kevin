@@ -1,7 +1,7 @@
 const prisma = require('../db');
 
 const findCartByCustomerId = async (custId) => {
-  const cart = await prisma.cart.findMany({
+  const cart = await prisma.cart.findFirst({
     select: {
       id: true,
       customer_id: true,
@@ -44,6 +44,18 @@ const insertCart = async (tx, custId) => {
   return cart;
 }
 
+const insertToCartId = async (cartId, data) => {
+  const item = await prisma.cart_Item.create({
+    data: {
+      cart_id: cartId,
+      books_product_id: data.books_product_id,
+      quantity: data.quantity,
+    },
+  });
+
+  return item;
+}
+
 const insertCartItem = async (tx, cartItemData) => {
   const cartItem = await tx.cart_Item.create({
     data: {
@@ -69,7 +81,23 @@ const createCartWithItems = async (custId, cartItemData) => {
   });
 };
 
+const updateCartItemQuantity = async (bookProductId, cartItemId, quantity) => {
+  const cartItem = await prisma.cart_Item.update({
+    where: {
+      id: cartItemId,
+      books_product_id: bookProductId
+    },
+    data: {
+      quantity: quantity
+    }
+  });
+
+  return cartItem;
+}
+
 module.exports = {
   findCartByCustomerId,
-  createCartWithItems
+  insertToCartId,
+  createCartWithItems,
+  updateCartItemQuantity
 }
