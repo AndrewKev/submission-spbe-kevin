@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node .",
     "dev": "node --watch .",
+    "seed": "node prisma/seed.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "prisma": {
@@ -16,9 +17,11 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.7.0",
+    "bcrypt": "^6.0.0",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^3.24.4"
   },
   "devDependencies": {
     "prisma": "^6.7.0"

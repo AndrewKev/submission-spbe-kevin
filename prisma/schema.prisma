@@ -15,7 +15,7 @@ datasource db {
 }
 
 model Author {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   name      String
   bio       String?
   birthdate DateTime
@@ -24,7 +24,7 @@ model Author {
 }
 
 model Book {
-  id               String @id @default(cuid())
+  id               String @id @default(uuid())
   title            String
   isbn             String
   publication_year Int
@@ -36,7 +36,7 @@ model Book {
 }
 
 model Book_Product {
-  id           String  @id @default(cuid())
+  id           String  @id @default(uuid())
   book_id      String
   price        Decimal
   stock        Int
@@ -50,7 +50,7 @@ model Book_Product {
 }
 
 model Warehouse {
-  id       String @id @default(cuid())
+  id       String @id @default(uuid())
   name     String
   location String
   capacity Int
@@ -59,18 +59,19 @@ model Warehouse {
 }
 
 model Customer {
-  id      String @id @default(cuid())
-  name    String
-  email   String
-  address String
-  phone   String
+  id       String @id @default(uuid())
+  name     String
+  email    String @unique
+  password String
+  address  String
+  phone    String
 
   carts    Cart[]
   invoices Invoice[]
 }
 
 model Cart {
-  id          String   @id @default(cuid())
+  id          String   @id @default(uuid())
   customer_id String
   created_at  DateTime
 
@@ -80,7 +81,7 @@ model Cart {
 }
 
 model Cart_Item {
-  id               String   @id @default(cuid())
+  id               String   @id @default(uuid())
   books_product_id String
   quantity         Int
   created_at       DateTime
@@ -91,7 +92,7 @@ model Cart_Item {
 }
 
 model Invoice {
-  id           String   @id @default(cuid())
+  id           String   @id @default(uuid())
   total_amount Decimal
   issued_at    DateTime
   status       String
@@ -104,7 +105,7 @@ model Invoice {
 }
 
 model Invoice_Item {
-  id               String  @id @default(cuid())
+  id               String  @id @default(uuid())
   books_product_id String
   quantity         Int
   price            Decimal
