@@ -5,20 +5,29 @@ const router = express.Router();
 const { getCustIdFromToken } = require('../utils/jwt');
 
 const {
-  findCartByCustomerId,
   createCartWithItems,
   insertToCartId,
-  updateCartItemQuantity
+  updateCartItemQuantity,
+  findUncheckedOutCartByCustomerId
 } = require("./cart.repository");
 
 const {
   findProductByBookProductId
 } = require("../books/book.repository");
 
+const { 
+  findInvoiceByCustId
+ } = require("../invoices/invoice.repository");
+
+
 router.get("/", async (req, res) => {
   const custId = getCustIdFromToken(req);
-  const carts = await findCartByCustomerId(custId);
+  
+  const invoices = await findInvoiceByCustId(custId);
+  const arrCheckedout = invoices.map((item) => item.cart_id);
 
+  const carts = await findUncheckedOutCartByCustomerId(custId, arrCheckedout)
+  
   if (!carts) return res.send([]);
 
   return res.send(carts)
@@ -27,12 +36,14 @@ router.get("/", async (req, res) => {
 router.post("/items", async (req, res) => {
   const custId = getCustIdFromToken(req);
   const bookProduct = await findProductByBookProductId(req.body?.books_product_id);
-
-  // check user sudah punya cart atau belum
+  
+  // check user sudah punya cart (yg belum dicheckout) atau belum
   // jika sudah, tambah product ke cart
   // jika belum, buat cart baru
-  const userCart = await findCartByCustomerId(custId);
-
+  const invoices = await findInvoiceByCustId(custId);
+  const arrCheckedout = invoices.map((item) => item.cart_id);
+  const userCart = await findUncheckedOutCartByCustomerId(custId, arrCheckedout)
+  
   if (userCart) {
     // masukan product ke cart yg sudah ada
     // cek jika barang sama, maka tambahkan quantity

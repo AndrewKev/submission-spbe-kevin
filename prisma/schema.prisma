@@ -94,7 +94,7 @@ model Cart_Item {
 model Invoice {
   id           String   @id @default(uuid())
   total_amount Decimal
-  issued_at    DateTime
+  issued_at    DateTime @default(now())
   status       String
   customer_id  String
   cart_id      String
@@ -111,6 +111,6 @@ model Invoice_Item {
   price            Decimal
   invoice_id       String
 
-  book_products Books_Product @relation(fields: [books_product_id], references: [id])
+  books_product Books_Product @relation(fields: [books_product_id], references: [id])
   invoice       Invoice       @relation(fields: [invoice_id], references: [id])
 }

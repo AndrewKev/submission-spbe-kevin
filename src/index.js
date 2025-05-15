@@ -20,6 +20,12 @@ app.use("/books", auth, bookController);
 const cartController = require('./carts/cart.controller');
 app.use("/carts", auth, cartController);
 
+const checkoutController = require('./checkouts/checkout.controller');
+app.use("/checkout", auth, checkoutController);
+
+const invoiceController = require('./invoices/invoice.controller');
+app.use("/invoices", auth, invoiceController);
+
 app.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`)
 })

@@ -43,6 +43,28 @@ const findBookById = async (bookId) => {
   return book;
 }
 
+const findProductByBookProductId = async (bookProductId) => {
+  const bookProduct = await prisma.books_Product.findUnique({
+    select: {
+      id: true,
+      format: true,
+      price: true,
+      stock: true,
+      warehouse: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+    where: {
+      id: bookProductId
+    }
+  });
+
+  return bookProduct;
+}
+
 const findProductByBookId = async (bookId) => {
   const bookProduct = await prisma.books_Product.findMany({
     select: {
@@ -65,8 +87,25 @@ const findProductByBookId = async (bookId) => {
   return bookProduct;
 }
 
+const updateBookProductStock = async (bookProductId, stock) => {
+  const bookProduct = await prisma.books_Product.update({
+    where: {
+      id: bookProductId
+    },
+    data: {
+      stock: {
+        decrement: stock
+      }
+    }
+  });
+
+  return bookProduct;
+}
+
 module.exports = {
   findBooks,
   findBookById,
-  findProductByBookId
+  findProductByBookProductId,
+  findProductByBookId,
+  updateBookProductStock
 }

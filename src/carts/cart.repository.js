@@ -1,6 +1,6 @@
 const prisma = require('../db');
 
-const findCartByCustomerId = async (custId) => {
+const findUncheckedOutCartByCustomerId = async (custId, arrCheckedout) => {
   const cart = await prisma.cart.findFirst({
     select: {
       id: true,
@@ -27,7 +27,10 @@ const findCartByCustomerId = async (custId) => {
       },
     },
     where: {
-      customer_id: custId
+      customer_id: custId,
+      id: {
+        notIn: arrCheckedout
+      }
     },
   });
 
@@ -96,7 +99,7 @@ const updateCartItemQuantity = async (bookProductId, cartItemId, quantity) => {
 }
 
 module.exports = {
-  findCartByCustomerId,
+  findUncheckedOutCartByCustomerId,
   insertToCartId,
   createCartWithItems,
   updateCartItemQuantity
