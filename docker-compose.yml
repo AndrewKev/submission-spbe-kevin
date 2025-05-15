@@ -1,0 +1,38 @@
+services:
+  app:
+    container_name: spbe_app
+    build:
+      context: .
+    volumes:
+      - .:/app
+    networks:
+      - spbe-network
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET: ${SECRET}
+      TOKEN_EXPIRY: ${TOKEN_EXPIRY}
+    depends_on:
+      - db
+    restart: on-failure
+
+  db:
+    container_name: spbe_db
+    image: postgres:17-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    ports:
+      - ${DATABASE_PORT}:${DATABASE_PORT}
+    volumes:
+      - spbe-db:/var/lib/postgresql/data
+    networks:
+      - spbe-network
+
+networks:
+  spbe-network:
+
+volumes:
+  spbe-db:
