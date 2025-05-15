@@ -44,6 +44,11 @@ router.post("/items", async (req, res) => {
   const arrCheckedout = invoices.map((item) => item.cart_id);
   const userCart = await findUncheckedOutCartByCustomerId(custId, arrCheckedout)
   
+  // cek quantity dengan stock
+  if (bookProduct.stock < req.body?.quantity) {
+    return res.status(400).send({ error: { message: "Stock not enough" } });
+  }
+
   if (userCart) {
     // masukan product ke cart yg sudah ada
     // cek jika barang sama, maka tambahkan quantity
