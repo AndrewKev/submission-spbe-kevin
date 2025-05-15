@@ -31,6 +31,20 @@ services:
     networks:
       - spbe-network
 
+  proxy:
+    container_name: spbe_proxy
+    build: 
+      context: ./nginx
+      dockerfile: Dockerfile
+    environment:
+      APP_PORT: ${APP_PORT}
+    ports: 
+      - 80:80
+    networks:
+      - spbe-network
+    depends_on:
+      - app
+
 networks:
   spbe-network:
 
